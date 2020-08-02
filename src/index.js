@@ -1,8 +1,8 @@
-import React from "react";
+import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./components/App";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, withRouter } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 
@@ -10,18 +10,42 @@ import firebase from "./firebase";
 
 import "semantic-ui-css/semantic.min.css";
 
-class Root extends React.Component {
+import { createStore } from "redux";
+import { Provider, connect } from "react-redux";
+import { composeWithDevTools } from "redux-devtools-extension";
+import { setUser } from "./actions/index";
+
+import rootReducer from "./reducers";
+
+const store = createStore(rootReducer, composeWithDevTools());
+
+class Root extends Component {
+    componentDidMount() {
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                this.props.setUser(user);
+                this.props.history.push("/");
+            }
+        });
+    }
     render() {
         return (
-            <BrowserRouter>
-                <Switch>
-                    <Route path="/" exact component={App} />
-                    <Route path="/login" component={Login} />
-                    <Route path="/register" component={Register} />
-                </Switch>
-            </BrowserRouter>
+            <Switch>
+                <Route path="/" exact component={App} />
+                <Route path="/login" component={Login} />
+                <Route path="/register" component={Register} />
+            </Switch>
         );
     }
 }
 
-ReactDOM.render(<Root />, document.getElementById("root"));
+const RootWithAuth = withRouter(connect(null, { setUser })(Root));
+
+ReactDOM.render(
+    <Provider store={store}>
+        <Router>
+            <RootWithAuth />
+        </Router>
+    </Provider>,
+    document.getElementById("root")
+);
