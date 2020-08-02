@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Grid, Form, Segment, Button, Header, Message, Icon } from "semantic-ui-react";
-
 import { Link } from "react-router-dom";
+import md5 from "md5";
 
 import firebase from "../../firebase";
 
@@ -13,6 +13,7 @@ class Register extends Component {
         passwordConfirmation: "",
         errors: [],
         loading: false,
+        userRef: firebase.database().ref("users"),
     };
     /**
      * @param {event} event
@@ -70,7 +71,25 @@ class Register extends Component {
                 .auth()
                 .createUserWithEmailAndPassword(this.state.email, this.state.password)
                 .then((createUser) => {
-                    this.setState({ loading: false });
+                    createUser.user
+                        .updateProfile({
+                            displayName: this.state.username,
+                            photoURL: `http://gravatar.com/avatar/${md5(
+                                createUser.user.email
+                            )}?d=identicon`,
+                        })
+                        .then(() => {
+                            this.saveUser(createUser).then(() => {
+                                this.setState({ loading: false });
+                            });
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                            this.setState({
+                                errors: this.state.errors.concat(err),
+                                loading: false,
+                            });
+                        });
                 })
                 .catch((error) => {
                     this.setState({
@@ -79,6 +98,13 @@ class Register extends Component {
                     });
                 });
         }
+    };
+
+    saveUser = (createUser) => {
+        return this.state.userRef.child(createUser.user.uid).set({
+            name: createUser.user.displayName,
+            avatar: createUser.user.photoURL,
+        });
     };
 
     handleInputError = (errors, inputName) =>
