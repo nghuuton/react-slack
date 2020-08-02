@@ -12,16 +12,28 @@ class Channels extends Component {
         channelDetails: "",
         channelRef: firebase.database().ref("channels"),
         modal: false,
+        firstLoad: true,
+        activeChannel: "",
     };
 
     componentDidMount() {
         let loadedChannels = [];
         this.state.channelRef.on("child_added", (snap) => {
             loadedChannels.push(snap.val());
-            console.log(loadedChannels);
-            this.setState({ channels: loadedChannels });
+            this.setState({ channels: loadedChannels }, () => {
+                this.setFirstChannel();
+            });
         });
     }
+
+    setFirstChannel = () => {
+        const firstChannel = this.state.channels[0];
+        if (this.state.firstLoad && this.state.channels.length > 0) {
+            this.props.setCurrentChannel(firstChannel);
+            this.setActiveChannel(firstChannel);
+        }
+        this.setState({ firstLoad: false });
+    };
 
     closeModal = () => {
         this.setState({ modal: false });
@@ -81,6 +93,7 @@ class Channels extends Component {
                       onClick={() => this.changeChannel(channel)}
                       name={channel.name}
                       style={{ opacity: 0.7 }}
+                      active={channel.id === this.state.activeChannel}
                   >
                       # {channel.name}
                   </Menu.Item>
@@ -88,7 +101,12 @@ class Channels extends Component {
             : null;
 
     changeChannel = (chanel) => {
+        this.setActiveChannel(chanel);
         this.props.setCurrentChannel(chanel);
+    };
+
+    setActiveChannel = (channel) => {
+        this.setState({ activeChannel: channel.id });
     };
 
     render() {
