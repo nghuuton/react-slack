@@ -12,6 +12,7 @@ class Register extends Component {
         password: "",
         passwordConfirmation: "",
         errors: [],
+        loading: false,
     };
     /**
      * @param {event} event
@@ -64,20 +65,36 @@ class Register extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
         if (this.isFormValid()) {
+            this.setState({ errors: [], loading: true });
             firebase
                 .auth()
                 .createUserWithEmailAndPassword(this.state.email, this.state.password)
                 .then((createUser) => {
-                    console.log(createUser);
+                    this.setState({ loading: false });
                 })
                 .catch((error) => {
-                    console.error(error);
+                    this.setState({
+                        loading: false,
+                        errors: this.state.errors.concat(error),
+                    });
                 });
         }
     };
 
+    handleInputError = (errors, inputName) =>
+        errors.some((error) => error.message.toLowerCase().includes(inputName))
+            ? "error"
+            : "";
+
     render() {
-        const { username, email, password, passwodConfirmation, errors } = this.state;
+        const {
+            username,
+            email,
+            password,
+            passwodConfirmation,
+            errors,
+            loading,
+        } = this.state;
         return (
             <Grid textAlign="center" verticalAlign="middle" className="app">
                 <Grid.Column style={{ maxWidth: 450 }}>
@@ -95,6 +112,7 @@ class Register extends Component {
                                 placeholder="Username"
                                 onChange={this.handleChange}
                                 type="text"
+                                className={this.handleInputError(errors, "username")}
                                 value={username}
                             />
                             <Form.Input
@@ -105,6 +123,7 @@ class Register extends Component {
                                 placeholder="Email Address"
                                 onChange={this.handleChange}
                                 type="email"
+                                className={this.handleInputError(errors, "email")}
                                 value={email}
                             />
                             <Form.Input
@@ -115,6 +134,7 @@ class Register extends Component {
                                 placeholder="Password"
                                 onChange={this.handleChange}
                                 type="password"
+                                className={this.handleInputError(errors, "password")}
                                 email={password}
                             />
                             <Form.Input
@@ -125,9 +145,16 @@ class Register extends Component {
                                 placeholder="Password Confirmation"
                                 onChange={this.handleChange}
                                 type="password"
+                                className={this.handleInputError(errors, "password")}
                                 value={passwodConfirmation}
                             />
-                            <Button color="orange" fluid size="large">
+                            <Button
+                                className={loading ? "loading" : ""}
+                                disabled={loading}
+                                color="orange"
+                                fluid
+                                size="large"
+                            >
                                 Submit
                             </Button>
                         </Segment>
