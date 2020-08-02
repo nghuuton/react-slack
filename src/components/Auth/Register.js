@@ -11,6 +11,7 @@ class Register extends Component {
         email: "",
         password: "",
         passwordConfirmation: "",
+        errors: [],
     };
     /**
      * @param {event} event
@@ -20,31 +21,63 @@ class Register extends Component {
             [event.target.name]: event.target.value,
         });
     };
+    isformEmpty = ({ username, password, email, passwordConfirmation }) => {
+        return (
+            !username.length ||
+            !email.length ||
+            !password.length ||
+            !passwordConfirmation.length
+        );
+    };
+
+    isPasswordValid = ({ password, passwordConfirmation }) => {
+        if (password.length < 6 || passwordConfirmation.length < 6) {
+            return false;
+        } else if (password !== passwordConfirmation) {
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+    isFormValid = () => {
+        let errors = [];
+        let error;
+        if (this.isformEmpty(this.state)) {
+            error = { message: "Fill in all fields" };
+            this.setState({ errors: errors.concat(error) });
+            return false;
+        } else if (!this.isPasswordValid(this.state)) {
+            error = { message: "Password is invalid" };
+            this.setState({ errors: errors.concat(error) });
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+    displayErrors = (errors) => errors.map((error, i) => <p key={i}>{error.message}</p>);
 
     /**
      * @param {event} event
      */
     handleSubmit = (event) => {
         event.preventDefault();
-        const dataToSubmit = {};
-        for (let key in this.state) {
-            if (key !== "passwordConfirmation") {
-                dataToSubmit[key] = this.state[key];
-            }
+        if (this.isFormValid()) {
+            firebase
+                .auth()
+                .createUserWithEmailAndPassword(this.state.email, this.state.password)
+                .then((createUser) => {
+                    console.log(createUser);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
         }
-        firebase
-            .auth()
-            .createUserWithEmailAndPassword(this.state.email, this.state.password)
-            .then((createUser) => {
-                console.log(createUser);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
     };
 
     render() {
-        const { username, email, password, passwodConfirmation } = this.state;
+        const { username, email, password, passwodConfirmation, errors } = this.state;
         return (
             <Grid textAlign="center" verticalAlign="middle" className="app">
                 <Grid.Column style={{ maxWidth: 450 }}>
@@ -99,6 +132,12 @@ class Register extends Component {
                             </Button>
                         </Segment>
                     </Form>
+                    {errors.length > 0 && (
+                        <Message error>
+                            <h3>Error</h3>
+                            {this.displayErrors(errors)}
+                        </Message>
+                    )}
                     <Message>
                         Already a user? <Link to="/login">Login</Link>
                     </Message>
