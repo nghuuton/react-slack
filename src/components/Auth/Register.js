@@ -80,7 +80,7 @@ class Register extends Component {
                         })
                         .then(() => {
                             this.saveUser(createUser).then(() => {
-                                this.setState({ loading: false });
+                                this.setState({ loading: false, formSuccess: true });
                             });
                         })
                         .catch((err) => {
