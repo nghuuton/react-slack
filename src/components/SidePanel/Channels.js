@@ -12,6 +12,15 @@ class Channels extends Component {
         modal: false,
     };
 
+    componentDidMount() {
+        let loadedChannels = [];
+        this.state.channelRef.on("child_added", (snap) => {
+            loadedChannels.push(snap.val());
+            console.log(loadedChannels);
+            this.setState({ channels: loadedChannels });
+        });
+    }
+
     closeModal = () => {
         this.setState({ modal: false });
     };
@@ -62,6 +71,20 @@ class Channels extends Component {
 
     isFormValid = ({ channelName, channelDetails }) => channelName && channelDetails;
 
+    displayChannels = (channels) =>
+        channels.length > 0
+            ? channels.map((channel) => (
+                  <Menu.Item
+                      key={channel.id}
+                      onClick={() => console.log(channel)}
+                      name={channel.name}
+                      style={{ opacity: 0.7 }}
+                  >
+                      # {channel.name}
+                  </Menu.Item>
+              ))
+            : null;
+
     render() {
         const { channels, modal } = this.state;
         return (
@@ -73,6 +96,7 @@ class Channels extends Component {
                         </span>{" "}
                         ({channels.length}) <Icon name="add" onClick={this.openModal} />
                     </Menu.Item>
+                    {this.displayChannels(channels)}
                 </Menu.Menu>
                 <Modal basic open={modal} onClose={this.closeModal}>
                     <Modal.Header>Add a channel</Modal.Header>
