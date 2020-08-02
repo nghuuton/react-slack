@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Menu, Icon, Modal, Form, Input, Button } from "semantic-ui-react";
 
 import firebase from "../../firebase";
+import { connect } from "react-redux";
+import { setCurrentChannel } from "../../actions/index";
 
 class Channels extends Component {
     state = {
@@ -76,7 +78,7 @@ class Channels extends Component {
             ? channels.map((channel) => (
                   <Menu.Item
                       key={channel.id}
-                      onClick={() => console.log(channel)}
+                      onClick={() => this.changeChannel(channel)}
                       name={channel.name}
                       style={{ opacity: 0.7 }}
                   >
@@ -84,6 +86,10 @@ class Channels extends Component {
                   </Menu.Item>
               ))
             : null;
+
+    changeChannel = (chanel) => {
+        this.props.setCurrentChannel(chanel);
+    };
 
     render() {
         const { channels, modal } = this.state;
@@ -134,4 +140,4 @@ class Channels extends Component {
     }
 }
 
-export default Channels;
+export default connect(null, { setCurrentChannel })(Channels);
