@@ -7,8 +7,8 @@ body,
 }
 
 .messages {
-    height: 370px;
-    overflow-y: scroll;
+    height: 435px;
+    overflow-y: auto;
     max-width: 700px !important;
 }
 
@@ -22,6 +22,14 @@ body,
 }
 
 .message__self {
+    border-left: 2px solid green;
+    padding-left: 8px;
+}
+
+.message__noseft {
     border-left: 2px solid orange;
     padding-left: 8px;
+}
+.message__image {
+    padding: 1em;
 }
