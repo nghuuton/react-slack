@@ -7,9 +7,14 @@ body,
 }
 
 .messages {
-    height: 435px;
+    height: 62vh;
     overflow-y: auto;
     max-width: 700px !important;
+}
+
+.messages__progress {
+    height: 58vh;
+    overflow-y: scroll;
 }
 
 .message__form {
