@@ -33,3 +33,7 @@ body,
 .message__image {
     padding: 1em;
 }
+
+.process__bar {
+    margin: 0.3em 0 0 0 !important;
+}
