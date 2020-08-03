@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 
 class DirectMessages extends Component {
     state = {
+        activeChannel: "",
         user: this.props.currentUser,
         users: [],
         userRef: firebase.database().ref("users"),
@@ -77,6 +78,7 @@ class DirectMessages extends Component {
         };
         this.props.setCurrentChannel(channelData);
         this.props.setPrivateChannel(true);
+        this.setActiveChannel(user.uid);
     };
 
     getChannel = (userID) => {
@@ -86,8 +88,12 @@ class DirectMessages extends Component {
             : `${currentUserId}/${userID}`;
     };
 
+    setActiveChannel = (userUID) => {
+        this.setState({ activeChannel: userUID });
+    };
+
     render() {
-        const { users } = this.state;
+        const { users, activeChannel } = this.state;
         return (
             <Menu.Menu className="menu">
                 <Menu.Item>
@@ -99,6 +105,7 @@ class DirectMessages extends Component {
                 {/* Users to Send Direct Message */}
                 {users.map((user) => (
                     <Menu.Item
+                        active={user.uid === activeChannel}
                         key={user.uid}
                         onClick={() => this.changeChannel(user)}
                         style={{ opacity: 0.7, fontStyle: "italic" }}

@@ -4,7 +4,7 @@ import uuidv4 from "uuid/v4";
 
 import firebase from "../../firebase";
 import FileModal from "./FileModal";
-import ProcessBar from "./ProcessBar";
+import ProgressBar from "./ProgressBar";
 
 class MessagesForm extends Component {
     state = {
@@ -198,7 +198,10 @@ class MessagesForm extends Component {
                     closeModal={this.closeModal}
                     uploadFile={this.uploadFile}
                 />
-                <ProcessBar uploadState={uploadState} percentUploaded={percentUploaded} />
+                <ProgressBar
+                    uploadState={uploadState}
+                    percentUploaded={percentUploaded}
+                />
             </Segment>
         );
     }
