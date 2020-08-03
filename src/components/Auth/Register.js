@@ -121,6 +121,7 @@ class Register extends Component {
             errors,
             loading,
         } = this.state;
+        console.log(errors);
         return (
             <Grid textAlign="center" verticalAlign="middle" className="app">
                 <Grid.Column style={{ maxWidth: 450 }}>
