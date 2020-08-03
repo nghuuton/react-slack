@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Segment, Input, Button } from "semantic-ui-react";
 
 import firebase from "../../firebase";
+import FileModal from "./FileModal";
 
 class MessagesForm extends Component {
     state = {
@@ -10,6 +11,15 @@ class MessagesForm extends Component {
         user: this.props.currentUser,
         loading: false,
         errors: [],
+        modal: false,
+    };
+
+    openModal = () => {
+        this.setState({ modal: true });
+    };
+
+    closeModal = () => {
+        this.setState({ modal: false });
     };
 
     createMessage = () => {
@@ -56,7 +66,7 @@ class MessagesForm extends Component {
     };
 
     render() {
-        const { errors } = this.state;
+        const { errors, message, loading, modal } = this.state;
 
         return (
             <Segment className="message__form">
@@ -65,6 +75,7 @@ class MessagesForm extends Component {
                     name="message"
                     onChange={this.handleChange}
                     style={{ marginBottom: "0.7em" }}
+                    value={message}
                     label={<Button icon={"add"} />}
                     labelPosition="left"
                     className={
@@ -77,17 +88,20 @@ class MessagesForm extends Component {
                 <Button.Group icon widths="2">
                     <Button
                         onClick={this.sendMessage}
+                        disabled={loading}
                         color="orange"
                         content="Add Reply"
                         labelPosition="left"
                         icon="edit"
                     />
                     <Button
+                        onClick={this.openModal}
                         color="teal"
                         content="Upload Media"
                         labelPosition="right"
                         icon="cloud upload"
                     />
+                    <FileModal modal={modal} closeModal={this.closeModal} />
                 </Button.Group>
             </Segment>
         );

@@ -9,6 +9,7 @@ body,
 .messages {
     height: 370px;
     overflow-y: scroll;
+    max-width: 700px !important;
 }
 
 .message__form {
@@ -18,4 +19,9 @@ body,
     left: 0;
     right: 1em;
     z-index: 200;
+}
+
+.message__self {
+    border-left: 2px solid orange;
+    padding-left: 8px;
 }
