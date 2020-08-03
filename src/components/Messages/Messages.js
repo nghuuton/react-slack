@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-import { Segment, Comment, Dimmer, Loader, SearchResult } from "semantic-ui-react";
-import MessagesForm from "./MessagesForm";
-import MessagesHeader from "./MessagesHeader";
-
+import { Comment, Segment } from "semantic-ui-react";
 import firebase from "../../firebase";
 import Message from "./Message";
+import MessagesForm from "./MessagesForm";
+import MessagesHeader from "./MessagesHeader";
 
 class Messages extends Component {
     state = {
@@ -102,7 +101,6 @@ class Messages extends Component {
             channel,
             messages,
             progressBar,
-            loading,
             numUniqueUsers,
             searchTerm,
             searchResults,
