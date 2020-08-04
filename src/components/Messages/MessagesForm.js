@@ -23,6 +23,13 @@ class MessagesForm extends Component {
         emojiPicker: false,
     };
 
+    componentWillMount() {
+        if (this.state.uploadTask !== null) {
+            this.state.uploadTask.cancel();
+            this.setState({ uploadTask: null });
+        }
+    }
+
     openModal = () => {
         this.setState({ modal: true });
     };
@@ -81,7 +88,7 @@ class MessagesForm extends Component {
 
     getPath = () => {
         if (this.props.isPrivateChannel) {
-            return `chat/private-${this.state.channel.id}/`;
+            return `chat/private/${this.state.channel.id}/`;
         } else {
             return "chat/public";
         }
@@ -152,7 +159,10 @@ class MessagesForm extends Component {
             });
     };
 
-    handleKeyDown = () => {
+    handleKeyDown = (event) => {
+        if (event.ctrlKey && event.keyCode === 13) {
+            this.sendMessage();
+        }
         const { message, typingRef, channel, user } = this.state;
         if (message) {
             typingRef.child(channel.id).child(user.uid).set(user.displayName);

@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 
 import { setUserPosts } from "../../actions/index";
 import Typing from "./Typing";
+import Skeleton from "./Skeleton";
 
 class Messages extends Component {
     state = {
@@ -28,11 +29,13 @@ class Messages extends Component {
         searchTerm: "",
         searchLoading: false,
         searchResults: [],
+        listeners: [],
     };
 
     componentDidMount() {
-        const { channel, user } = this.state;
+        const { channel, user, listeners } = this.state;
         if (channel && user) {
+            this.removeListeners(listeners);
             this.addListeners(channel.id);
             this.addUserStarsListener(channel.id, user.uid);
         }
@@ -43,7 +46,25 @@ class Messages extends Component {
         this.state.userRef.off("value", () => {
             console.log("Cancel firebase");
         });
+        this.removeListeners(this.state.listeners);
+        this.state.connectedref.off();
     }
+
+    removeListeners = (listeners) => {
+        listeners.forEach((listener) => {
+            listener.ref.child(listener.id).off(listener.event);
+        });
+    };
+
+    addToListner = (id, ref, event) => {
+        const index = this.state.listeners.findIndex((listener) => {
+            return listener.id === id && listener.ref === ref && listener.event === event;
+        });
+        if (index !== -1) {
+            const newListners = { id, ref, event };
+            this.setState({ listeners: this.state.listeners.concat(newListners) });
+        }
+    };
 
     componentDidUpdate(prevProps, prevState) {
         if (this.messageEnd) {
@@ -85,6 +106,7 @@ class Messages extends Component {
             }
             this.setState({ typingUsers });
         });
+        this.addToListner(channelId, this.state.typingRef, "child_added");
         this.state.typingRef.child(channelId).on("child_removed", (snap) => {
             const index = typingUsers.findIndex((user) => user.id === snap.key);
             if (index !== -1) {
@@ -92,6 +114,8 @@ class Messages extends Component {
                 this.setState({ typingUsers });
             }
         });
+        this.addToListner(channelId, this.state.typingRef, "child_removed");
+
         this.state.connectedref.on("value", (snap) => {
             if (snap.val() !== true) {
                 this.state.typingRef
@@ -114,6 +138,7 @@ class Messages extends Component {
             this.countUniqueUsers(loadedMessages);
             this.countUsersPosts(loadedMessages);
         });
+        this.addToListner(channelId, ref, "child_added");
     };
 
     getMessagesRef = () => {
@@ -236,6 +261,15 @@ class Messages extends Component {
             </div>
         ));
 
+    displayMessageSkeleton = (loading) =>
+        loading ? (
+            <React.Fragment>
+                {[...Array(10)].map((_, i) => (
+                    <Skeleton key={i} />
+                ))}
+            </React.Fragment>
+        ) : null;
+
     render() {
         const {
             messagesRef,
@@ -250,6 +284,7 @@ class Messages extends Component {
             privateChannel,
             isChannelStarred,
             typingUsers,
+            loading,
         } = this.state;
         return (
             <React.Fragment>
@@ -266,6 +301,7 @@ class Messages extends Component {
                     <Comment.Group
                         className={progressBar ? "messages__progress" : "messages"}
                     >
+                        {this.displayMessageSkeleton(loading)}
                         {searchTerm
                             ? this.displayMessages(searchResults)
                             : this.displayMessages(messages)}
