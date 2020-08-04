@@ -45,6 +45,16 @@ class Messages extends Component {
         });
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.messageEnd) {
+            this.scrollToBotto();
+        }
+    }
+
+    scrollToBotto = () => {
+        this.messageEnd.scrollIntoView({ behavior: "smooth" });
+    };
+
     addUserStarsListener = (channelId, userId) => {
         this.state.userRef
             .child(userId)
@@ -260,6 +270,7 @@ class Messages extends Component {
                             ? this.displayMessages(searchResults)
                             : this.displayMessages(messages)}
                         {this.displayTypingUser(typingUsers)}
+                        <div ref={(node) => (this.messageEnd = node)}></div>
                     </Comment.Group>
                 </Segment>
                 <MessagesForm
