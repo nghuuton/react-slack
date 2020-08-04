@@ -18,6 +18,7 @@ class MessagesForm extends Component {
         uploadTask: null,
         storageRef: firebase.storage().ref(),
         percentUploaded: 0,
+        typingRef: firebase.database().ref("typing"),
     };
 
     openModal = () => {
@@ -51,7 +52,7 @@ class MessagesForm extends Component {
 
     sendMessage = () => {
         const { getMessagesRef } = this.props;
-        const { message, channel } = this.state;
+        const { message, channel, typingRef, user } = this.state;
         if (message) {
             this.setState({ loading: true });
             getMessagesRef()
@@ -60,6 +61,7 @@ class MessagesForm extends Component {
                 .set(this.createMessage())
                 .then(() => {
                     this.setState({ loading: false, message: "", errors: [] });
+                    typingRef.child(channel.id).child(user.uid).remove();
                 })
                 .catch((err) => {
                     console.error(err);
@@ -148,6 +150,15 @@ class MessagesForm extends Component {
             });
     };
 
+    handleKeyDown = () => {
+        const { message, typingRef, channel, user } = this.state;
+        if (message) {
+            typingRef.child(channel.id).child(user.uid).set(user.displayName);
+        } else {
+            typingRef.child(channel.id).child(user.uid).remove();
+        }
+    };
+
     render() {
         const {
             errors,
@@ -163,6 +174,7 @@ class MessagesForm extends Component {
                 <Input
                     fluid
                     name="message"
+                    onKeyDown={this.handleKeyDown}
                     onChange={this.handleChange}
                     style={{ marginBottom: "0.7em" }}
                     value={message}

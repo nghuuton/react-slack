@@ -13,6 +13,7 @@ class Channels extends Component {
         channelDetails: "",
         channelRef: firebase.database().ref("channels"),
         messagesRef: firebase.database().ref("messages"),
+        typingRef: firebase.database().ref("typing"),
         notifications: [],
         modal: false,
         firstLoad: true,
@@ -189,6 +190,7 @@ class Channels extends Component {
 
     changeChannel = (channel) => {
         this.setActiveChannel(channel);
+        this.state.typingRef.child(channel.id).child(this.props.currentUser.uid).remove();
         this.clearNotifications();
         this.props.setCurrentChannel(channel);
         this.props.setPrivateChannel(false);

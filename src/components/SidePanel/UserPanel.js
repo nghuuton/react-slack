@@ -10,11 +10,12 @@ import {
     Button,
 } from "semantic-ui-react";
 import firebase from "../../firebase";
-
 class UserPanel extends Component {
     state = {
         user: this.props.currentUser,
         modal: false,
+        previewImage: "",
+        storageRef: firebase.storage().ref(),
     };
     dropdownOptions = () => {
         return [
@@ -49,8 +50,19 @@ class UserPanel extends Component {
             .then(() => console.log("Sing out"));
     };
 
+    handleChange = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        if (file) {
+            reader.readAsDataURL(file);
+            reader.addEventListener("load", () => {
+                this.setState({ previewImage: reader.result });
+            });
+        }
+    };
+
     render() {
-        const { user, modal } = this.state;
+        const { user, modal, previewImage } = this.state;
         const { primaryColor } = this.props;
         return (
             <Grid style={{ background: `${primaryColor}` }}>
@@ -80,19 +92,18 @@ class UserPanel extends Component {
                         <Modal.Header>Change Avatar</Modal.Header>
                         <Modal.Content>
                             <Input
+                                onChange={this.handleChange}
                                 fluid
                                 type="file"
                                 label="New Avatar"
                                 name="previewImage"
                             />
-                            <Grid centered stackable columns={2}>
+                            {/* <Grid centered stackable columns={2}>
                                 <Grid.Row centered>
-                                    <Grid.Column className="ui center aligned grid">
-                                        Image Preview
-                                    </Grid.Column>
+                                    <Grid.Column className="ui center aligned grid"></Grid.Column>
                                     <Grid.Column>Cropped Image Preview</Grid.Column>
                                 </Grid.Row>
-                            </Grid>
+                            </Grid> */}
                         </Modal.Content>
                         <Modal.Actions>
                             <Button color="green" inverted>
