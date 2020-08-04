@@ -14,7 +14,7 @@ class MessagesHeader extends Component {
             isChannelStarred,
         } = this.props;
         return (
-            <Segment clearing>
+            <Segment clearing inverted color="grey">
                 <Header fluid="true" as="h2" floated="left" style={{ marginBottom: 0 }}>
                     <span>
                         {channelName}{" "}
@@ -26,7 +26,9 @@ class MessagesHeader extends Component {
                             />
                         )}
                     </span>
-                    <Header.Subheader>{numUniqueUsers}</Header.Subheader>
+                    <Header.Subheader style={{ color: "#eee" }}>
+                        {numUniqueUsers}
+                    </Header.Subheader>
                 </Header>
                 <Header floated="right">
                     <Input
@@ -36,6 +38,7 @@ class MessagesHeader extends Component {
                         icon="search"
                         name="searchTerm"
                         placeholder="Search Message"
+                        transparent
                     />
                 </Header>
             </Segment>

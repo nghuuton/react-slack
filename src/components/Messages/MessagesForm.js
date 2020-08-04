@@ -159,7 +159,7 @@ class MessagesForm extends Component {
         } = this.state;
 
         return (
-            <Segment className="message__form">
+            <Segment className="message__form" inverted color="grey">
                 <Input
                     fluid
                     name="message"
