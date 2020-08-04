@@ -17,7 +17,7 @@ class SidePanel extends Component {
                 style={{ background: "#4c3c4c", fontSie: "1.2rem" }}
             >
                 <UserPanel currentUser={this.props.currentUser} />
-                <Starred />
+                <Starred currentUser={this.props.currentUser} />
                 <Channels currentUser={this.props.currentUser} />
                 <DirectMessages currentUser={this.props.currentUser} />
             </Menu>

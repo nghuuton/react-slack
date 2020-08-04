@@ -79,7 +79,7 @@ class Messages extends Component {
                 [this.state.channel.id]: {
                     name: this.state.channel.name,
                     details: this.state.channel.details,
-                    creteBy: {
+                    createBy: {
                         name: this.state.channel.createBy.name,
                         avatar: this.state.channel.createBy.avatar,
                     },
