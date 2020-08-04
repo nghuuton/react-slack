@@ -42,8 +42,8 @@ class Starred extends Component {
                 <Menu.Item>
                     <span>
                         <Icon name="star" /> STARRED
-                    </span>
-                    ({starredChannels.length}){" "}
+                    </span>{" "}
+                    ({starredChannels.length})
                     <Icon name="add" onClick={this.openModal} />
                 </Menu.Item>
                 {this.displayChannels(starredChannels)}
