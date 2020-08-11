@@ -33,6 +33,7 @@ class FileModal extends Component {
     };
 
     clearFile = () => {
+        console.log(this.state);
         this.setState({ file: null });
     };
 
